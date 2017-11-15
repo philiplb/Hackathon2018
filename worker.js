@@ -8,8 +8,8 @@ const authToken = process.env["GEENY_APPLICATION_AUTH_TOKEN"]
 
 const brokerConfig = {
   appId: appId,
-  messageTypeId: '54121087-14f1-4c2a-835f-117681618cc9', // incoming Develco messageType
-  iteratorType: 'LATEST',
+  messageTypeId: "7afe604a-3b0a-4637-8c7c-d447c00e0bf0", // https://developers.geeny.io/explorer/elements/7afe604a-3b0a-4637-8c7c-d447c00e0bf0
+  iteratorType: 'EARLIEST',
   maxBatchSize: 10
 }
 
