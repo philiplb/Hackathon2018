@@ -1,0 +1,21 @@
+[{
+  "messageId":"1",
+  "thingId":"1",
+  "userId":"1",
+  "payload":{
+    "data":{
+      "summary":"Payload could be anything",
+      "foo":"bar"
+    }
+  }
+},{
+  "messageId":"2",
+  "thingId":"1",
+  "userId":"1",
+  "payload":"I am a string payload"
+},{
+  "messageId":"3",
+  "thingId":"1",
+  "userId":"1",
+  "payload":1337
+}]
