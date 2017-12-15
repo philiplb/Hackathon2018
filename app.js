@@ -53,6 +53,10 @@ app.get('/develco-hub', (req, res) => {
   res.send(getHtmlOutput(msgs))
 })
 
+app.get('/waiter', (req, res) => {
+    res.sendFile(`${__dirname}/waiter.html`)
+})
+
 app.get('/send-message', (req, res) => {
   const thing = req.query.thing
   const cmd = req.query.cmd
@@ -104,6 +108,12 @@ function pushMessage(msg) {
   pushToStore(messages.all, message)
 }
 
+function pushWaiterMessage() {
+    var msg = "isWaiting"
+    const message = { ...JSON.parse(msg), created: new Date()}
+    ws.emit('messages', { ...message, type: "status"})
+}
+
 function pushToStore(store, message) {
   store.items.push(message)
   while (store.items.length > store.limit) {
@@ -150,4 +160,30 @@ function toBase64(val) {
   } else {
     return base64.encode(val)
   }
+}
+
+
+function convertToGrams(s = '') {
+    let measure = s.substr(2, 6)
+    if (measure.length % 2 !== 0) {
+        measure = '0' + measure
+    }
+    let maxVal = Math.pow(2, measure.length / 2 * 8)
+
+    let hex = []
+    for (let i = 1; i <= measure.split('').length; i = i + 2) {
+        hex.unshift(measure[i - 1], measure[i])
+    }
+    hex = hex.join('')
+
+    let parsed = parseInt(hex, 16)
+    if (parsed > maxVal / 2 - 1) {
+        parsed = parsed - maxVal
+    }
+    if (parsed < 0) {
+        parsed = parsed * -1
+    }
+    parsed = parsed * Math.pow(10, -1)
+
+    return parseFloat(parsed.toFixed(2))
 }

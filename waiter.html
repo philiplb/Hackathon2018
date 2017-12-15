@@ -1,0 +1,153 @@
+<html>
+<head>
+  <title>Waiter</title>
+  <style media="screen" type="text/css">
+    table {
+      margin: auto;
+      margin-top: 50px;
+    }
+
+    td {
+      width: 150px;
+      height: 150px;
+      border-style: solid;
+      text-align: center;
+    }
+
+    #guest1 {
+      background-color: #AAAAAA;
+    }
+
+    #guest2 {
+      background-color: #AAAAAA;
+    }
+
+    #guest3 {
+      background-color: #AAAAAA;
+    }
+
+    #guest4 {
+      background-color: #AAAAAA;
+    }
+  </style>
+</head>
+<body>
+
+<table>
+  <tr>
+    <td id="guest1">Guest 1</td>
+    <td id="guest2">Guest 2</td>
+  </tr>
+  <tr>
+    <td id="guest3">Guest 3</td>
+    <td id="guest4">Guest 4</td>
+  </tr>
+</table>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+  <script>
+
+    var maxWeight = 526;
+    var minWeight = 260;
+
+    var httpProtocol = window.location.protocol
+    var wsProtocol = 'http:'
+    var hostName = window.location.hostname
+    var backendPort = window.location.port || 80
+    var WS_NOTIFICATION_URL = wsProtocol + '//' + hostName + ':' + backendPort
+
+    var socket = io(WS_NOTIFICATION_URL, {
+      path: '/notifications'
+    })
+
+    socket.on('messages', message => {
+      console.log(message.type);
+      console.log(message.data);
+      if (message.type === 'skaleMeasure') {
+        updateStatus(convertToGrams(message.data), 1);
+      }
+    })
+
+    updateStatus(275, 1);
+
+    function updateStatus(grams, guest) {
+
+      var element = document.getElementById("guest" + guest);
+
+      if (grams < 260) {
+        return
+      }
+
+      var percentage = ((grams-minWeight)/(maxWeight-minWeight));
+      if (isGlassEmpty(grams)) {
+        element.style.background = "#ff0000"
+      } else if (percentage < 0.5) {
+        element.style.background = "#ffff00";
+      } else {
+          element.style.background = "#00ff00";
+          element.innerHTML = "Guest 1";
+          setBulbStatus(false);
+      }
+      console.log("Got Grams: " + grams);
+    }
+
+    function setBulbStatus(on) {
+      var cmd = "";
+      if (on){
+        cmd = "cmd_on"
+      } else {
+        cmd = "cmd_off"
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', "http://" + window.location.hostname + ':' + backendPort + "/send-message?thing=smart_bulb_1&cmd=" +cmd);
+      xhr.send(null);
+    }
+
+    function isGlassEmpty(weight) {
+      return weight > 260 && weight < 290;
+    }
+
+    function convertToGrams(s = '') {
+      let measure = s.substr(2, 6)
+      if (measure.length % 2 !== 0) {
+        measure = '0' + measure
+      }
+      let maxVal = Math.pow(2, measure.length / 2 * 8)
+
+      let hex = []
+      for (let i = 1; i <= measure.split('').length; i = i + 2) {
+        hex.unshift(measure[i - 1], measure[i])
+      }
+      hex = hex.join('')
+
+      let parsed = parseInt(hex, 16)
+      if (parsed > maxVal / 2 - 1) {
+        parsed = parsed - maxVal
+      }
+      if (parsed < 0) {
+        parsed = parsed * -1
+      }
+      parsed = parsed * Math.pow(10, -1)
+
+      return parseFloat(parsed.toFixed(2))
+    }
+
+    var isDeliveringBeer = false;
+    document.getElementById('guest1').onclick = function() {
+      isDeliveringBeer = !isDeliveringBeer;
+      console.log("Deliver: "+ isDeliveringBeer);
+      setBulbStatus(isDeliveringBeer);
+
+      var element = document.getElementById("guest1");
+      if (isDeliveringBeer) {
+        element.innerHTML = "Guest 1: in progress"
+      } else {
+        element.innerHTML = "Guest 1"
+      }
+      return false;
+    };
+
+  </script>
+
+</body>
+</html>

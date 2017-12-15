@@ -4,7 +4,7 @@ module.exports = {
 
   //user id is needed when you send messages to connected devices
   //replace this string with your user id, check README.md how to do it.
-  userId: '559d0faf-09de-4e69-a150-73acb412906b',
+  userId: 'b8801819-d36f-4cd4-b465-aeebfb29f390',
 
   //this is the url for sending the messages to connected devices,
   //is provided from the runtime environment, do not modify this
@@ -61,7 +61,7 @@ module.exports = {
       cmd_off: 'off'
     },
     smart_bulb_1: {
-      thingId: '9bc506fa-218c-469a-8149-230107410825',
+      thingId: '001e674f-9872-4d6d-a5f5-831907a5e19f',
       messageTypeId: '5d610b4f-5532-4e24-b46f-c355bdd99958',
       cmd_on: 'on',
       cmd_off: 'off'
